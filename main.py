@@ -4,7 +4,7 @@ from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from info import get_info
 
-TOKEN = '7634814709:AAElSEd3C758Y9X6XS4sZx84pnE_GeWDK7k'
+TOKEN = ''
 bot = telebot.TeleBot(TOKEN)
 
 group_chat_id = None  # Глобальная переменная для хранения идентификатора чата группы
