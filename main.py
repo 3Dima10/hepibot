@@ -3,11 +3,27 @@ import sqlite3
 from datetime import datetime
 from apscheduler.schedulers.background import BackgroundScheduler
 from info import get_info
+import time
 
-TOKEN = ''
+TOKEN = '7634814709:AAElSEd3C758Y9X6XS4sZx84pnE_GeWDK7k'
 bot = telebot.TeleBot(TOKEN)
 
-group_chat_id = None  # Глобальная переменная для хранения идентификатора чата группы
+
+def save_group_id(chat_id):
+    with open("group_id.txt", "w") as f:
+        f.write(str(chat_id))
+
+def load_group_id():
+    try:
+        with open("group_id.txt", "r") as f:
+            return int(f.read().strip())
+    except FileNotFoundError:
+        return None
+
+
+group_chat_id = load_group_id()  # Глобальная переменная для хранения идентификатора чата группы
+
+
 
 def check_birthdays():
     today = datetime.now().strftime("%d-%m")
@@ -48,6 +64,8 @@ def send_birthday_messages():
 def start(message):
     global group_chat_id
     group_chat_id = message.chat.id
+    save_group_id(message.chat.id)
+
     bot.send_message(group_chat_id, 'Привет, бот запущен. Теперь я буду поздравлять с днём рождения!')
 
 @bot.message_handler(commands=['help'])
@@ -59,6 +77,15 @@ if __name__ == '__main__':
     scheduler.add_job(send_birthday_messages, 'cron', hour=0, minute=0)  # Запуск каждый день в полночь
     scheduler.start()
     
-    print('Бот запущен')
-    bot.polling(none_stop=True)
-    print('Бот остановлен')
+    # print('Бот запущен')
+    # bot.polling(none_stop=True)
+    # print('Бот остановлен')
+
+    while True:
+        try:
+            print('Бот запущен')
+            bot.polling(none_stop=True, interval=1, timeout=20)
+            print('Бот остановлен')
+        except Exception as e:
+            print(f"Ошибка polling: {e}")
+            time.sleep(5)
